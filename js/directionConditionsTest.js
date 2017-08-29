@@ -5,7 +5,7 @@
 //6tile can be accessed from top EasyStar.TOP if
 
 // var currentCoordinate = level[y][x];
-
+//test
 //loop through level 2d array
 //vertical y
 for (var y =0; y < level.length; y+=1) {
