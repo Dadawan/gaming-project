@@ -51,19 +51,18 @@ for (var y =0; y < level.length; y+=1) {
 
 		//6tile cases. If tile is a 6, loop thru cases to evaluate which directions can access from.
 		//if fails, then that direction won't be "pushed" on to setDirectionalConditions for THAT specific 6tile found at current x y
-		if (findCoord === 6) {
+		if (findCoord === 6) { 
 			//check this 6 tile for which directions exist, and if it has access
 			if (y !== level.length-1) { //check if southern tile exists
 				//it does, y is 1-6, check if have access from
 				southernTile = level[y+1][x];
 				console.log("Existing: The southern tile below the 6tile at (" + x + ", " + y + ") exists but can never be accessed from the south.");
-
 				if (southernTile) { //6tile can never be accessed from southern tile
 					console.log("Accessing: the 6tile at (" + x + ", " + y + ") is NOT accessible from the southern tile.");
-				}
-			} else { //y === 7
-				//southern tile does NOT exist
+				} 	
+			} else {
 				console.log("Existing: the southern tile below the 6tile at (" + x + ", " + y + ") does NOT exist.");
+
 			} 
 
 			if (y !== 0) { //check if northern tile exists
@@ -86,15 +85,14 @@ for (var y =0; y < level.length; y+=1) {
 				//it does, check if have access from
 				westernTile = level[y][x-1];
 				console.log("Existing: The western tile left of the 6tile at (" + x + ", " + y + ") exists.");
-
-				if (westernTile !== 1 && westerntile !== 4 && westernTile !== 8) {
+				// debugger;
+				if (westernTile !== 1 && westernTile !== 4 && westernTile !== 8) {
 					easystar.setDirectionalCondition(x, y, [EasyStar.LEFT]);
 					console.log("Accessing: the 6tile at (" + x + ", " + y + ") is accessible from the western tile.");
 				} else {
 					console.log("Accessing: the 6tile at (" + x + ", " + y + ") is NOT accessible from the western tile.");
 				}
 			}
-
 			if (x !== level[y].length-1) { //check if eastern tile exists
 				//it does, x is 1-10. check if have acess from
 				easternTile = level[y][x+1];
@@ -108,122 +106,103 @@ for (var y =0; y < level.length; y+=1) {
 					console.log("Accessing: the 6tile at (" + x + ", " + y + ") is NOT accessible from the eastern tile.");
 				}
 			}
-
-			//check if top left corner
-			if (y === 0 && x === 0) {
-				//5 directions unavailable: northeast, north, northwest, west, southwest
-				//if true run this code:
-				//don't run setdirection on x y for .TOP, TOP_LEFT...etc.
-				//check for remain valid directions. for ex: 6 at 0,0 can also not access south
-				//check for east, southeast, south
-				//check south:
-				if (y !== level.length-1) { //check if southern tile exists
-					//it does, y is 1-6, check if have access from
-					southernTile = level[y+1][x];
-					console.log("Existing: The southern tile below the 6tile at (" + x + ", " + y + ") exists but can never be accessed from the south.");
-
-					if (southernTile) { //6tile can never be accessed from southern tile
-						console.log("Accessing: the 6tile at (" + x + ", " + y + ") is NOT accessible from the southern tile.");
-					}
-				} else { //y === 7
-					//southern tile does NOT exist
-					console.log("Existing: the southern tile below the 6tile at (" + x + ", " + y + ") does NOT exist.");
-				}
-				//check east
-				if (x !== level[y].length-1) { //check if eastern tile exists
-					//it does, x is 1-10. check if have acess from
-					easternTile = level[y][x+1];
-					console.log("Existing: The eastern tile right of the 6tile at (" + x + ", " + y + ") exists.");
-				
-					if (easternTile !== 1 && easternTile !== 5 && easternTile !== 9) {
-						easystar.setDirectionalCondition(x, y, [EasyStar.RIGHT]);
-						console.log("Accessing: the 6tile at (" + x + ", " + y + ") is accessible from the eastern tile.");
-
-					} else {
-						console.log("Accessing: the 6tile at (" + x + ", " + y + ") is NOT accessible from the eastern tile.");
-					}
-				//**check southeastern tile exists and is valid. 
-				// when set this ? southEasternTile = level[y+1][x+1];
-				//errors will pop up if y===7 and x===11
-				if ((y === 0 && x === level[y].length-1) || (y=== level.length-1 && x === level[y].length-1) || (y=== level.length-1 && x === 0) || (y=== level.length-1 && x !== 0 && x !== level[y].length-1) || (y !== 0 && y !== level.length-1 && x === level[y].length-1)) {
+			//check southeastern tile exists
+			if ((y === 0 && x === level[y].length-1) || (y=== level.length-1 && x === level[y].length-1) || (y=== level.length-1 && x === 0) || (y=== level.length-1 && x !== 0 && x !== level[y].length-1) || (y !== 0 && y !== level.length-1 && x === level[y].length-1)) {
 				//check if top right corner, bottom left corner, bottom wall, bottom right corner, east/right wall
 				//if any of statements true, then run this code bc se corner is non existent for sure
-					break;
+					// southernTile = "not existing";
+					console.log("broken!" + x+  ', ' + y)
 				} else {
+					console.log("checking se tile!")
 					// setile exists so finish check southeastern
+					southernTile = level[y+1][x+1];
+					if ((southEasternTile === 0 && easternTile === 0) || (southEasternTile === 0 && southernTile === 0 && easternTile !== 4 && easternTile !== 5 && easternTile !== 6 && easternTile !== 9)) {
+						easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_RIGHT]);
+					} else if ((southernTile === 0 || southernTile === 8 || southernTile === 9 || southernTile === 7) && southEasternTile !== 9 && southEasternTile !== 8 && southEasternTile !== 7 && easternTile !== 4 && easternTile !== 9 && easternTile !== 5 && easternTile !== 6) {
+						easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_RIGHT]);
+					} else if (southernTile === 4 && southEasternTile !== 7 && southEasternTile !== 8 && southEasternTile !== 9 && easternTile !== 6 && easternTile !== 4 && easternTile !== 5 && easternTile !== 9) {
+						easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_RIGHT]);				
+					} else if (southernTile === 5 && southEasternTile !== 9 && southEasternTile !== 8 && southEasternTile !== 7 && easternTile !== 6 && easternTile !== 4 && easternTile !== 5 && easternTile !== 9) {
+						easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_RIGHT]);				
+					} else if (southernTile === 6 && southEasternTile !== 9 && southEasternTile !== 8 && southEasternTile !== 7 && easternTile !== 6 && easternTile !== 4 && easternTile !== 5 && easternTile !== 9) {
+						easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_RIGHT]);				
+					} else {
+						console.log("Map notes: the 6tile at " + x + " and " + y + " cannot be accessed from the southeastern tile.")				
+					}
 				}
+				
 
-				if ((southEasternTile === 0 && easternTile === 0) || (southEasternTile === 0 && southernTile === 0 && easternTile !== 4 && easternTile !== 5 && easternTile !== 6 && easternTile !== 9)) {
-					easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_RIGHT]);
-				} else if ((southernTile === 0 || southernTile === 8 || southernTile === 9 || southernTile === 7) && southEasternTile !== 9 && southEasternTile !== 8 && southEasternTile !== 7 && easternTile !== 4 && easternTile !== 9 && easternTile !== 5 && easternTile !== 6) {
-					easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_RIGHT]);
-				} else if (southernTile === 4 && southEasternTile !== 7 && southEasternTile !== 8 && southEasternTile !== 9 && easternTile !== 6 && easternTile !== 4 && easternTile !== 5 && easternTile !== 9) {
-					easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_RIGHT]);				
-				} else if (southernTile === 5 && southEasternTile !== 9 && southEasternTile !== 8 && southEasternTile !== 7 && easternTile !== 6 && easternTile !== 4 && easternTile !== 5 && easternTile !== 9) {
-					easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_RIGHT]);				
-				} else if (southernTile === 6 && southEasternTile !== 9 && southEasternTile !== 8 && southEasternTile !== 7 && easternTile !== 6 && easternTile !== 4 && easternTile !== 5 && easternTile !== 9) {
-					easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_RIGHT]);				
-				} else {
-					console.log("Map notes: the 6tile at " + x + " and " + y + " cannot be accessed from the southeastern tile.")				
-				}
-			}
-
-			} else if (y === 0 && x === level[y].length-1) {
-				//check if top right corner
-				//5 directions unavailable: northwest, north, northeast, east, southeast
-				//check for south, southwest, west
-			} else if (y === 0 && x !== 0 && x !== level[y].length-1) {
-				//then along top wall, but between corners
-				//3 directions unavailble: northeast, north, northwest
-				//check for southwest, south, southeast
-			} else if (y=== level.length-1 && x === 0) {	
-				//check if bottom left corner
-				//5 directions unavailable: northwest, west, southwest, south, southeast
-				//check east, northeast, north
-			} else if (y=== level.length-1 && x === level[y].length-1) {
-				//check if bottom right corner
-				//5 directions unavailable: northeast, east, southeast, south, southwest
-				//check  west, northwest, north
-			} else if (y=== level.length-1 && x !== 0 && x !== level[y].length-1) {
-				//then along bottom wall but between corners
-				//3 directions unavailable: southwest, south, southeast
-				//check west, northwest, north, northeast, east 
-			} else if (y !== 0 && y !== level.length-1 && x=== 0) {
-				//check if along west/left wall but not corners
-				//3 directions unavailable: northwest, west, southwest
-				//check north, northeast, east, southeast,south
-			} else if (y !== 0 && y !== level.length-1 && x === level[y].length-1) {
-				//check if along east/right wall but not corners
-				//3 directions unavailable: northeast, east, southeast
-				//check south, southwest, west, northwest, north
+			//check southwestern tile exists
+			if ((y=== level.length-1 && x === 0) || (y=== level.length-1 && x === level[y].length-1) || (y === 0 && x === 0) || (y !== 0 && y !== level.length-1 && x=== 0) || (y=== level.length-1 && x !== 0 && x !== level[y].length-1)) {
+				//check if bottom left corner, bottom right, top left corner, along west left wall, along bottom wall
+				console.log("broken!" + x + ', ' + y)
 			} else {
-				//check regularly, all positions????
-			}
+				southWesternTile = level[y+1][x-1];
+				if ((southernTile === 0 && southWesternTile === 0 && westernTile !== 4 && westernTile !== 5 && westernTile !== 6) || (southWesternTile === 0 && westernTile === 0)) {
+					easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_LEFT]);					
+				} else if ((southernTile === 9 || southernTile === 7 || southernTile === 8) && southWesternTile !== 8 && southWesternTile !== 9 && southWesternTile !== 0 && southEasternTile !==0 && southernTile !== 0 && southWesternTile !== 7 && westernTile !== 5 && westernTile !== 4 && westernTile !== 6 && westernTile !== 8) {
+					easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_LEFT]);
+				} else if (southernTile === 4 && southWesternTile !== 7 && southWesternTile !== 9 && southWesternTile !== 8 && westernTile !== 8 && westernTile !== 6 && westernTile !== 4 && westernTile !== 5) {
+					easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_LEFT]);				
+				} else if (southernTile === 5 && southWesternTile !== 7 && southWesternTile !== 9 && southWesternTile !== 8 & westernTile !== 4 && westernTile !== 5 && westernTile !== 6 && westernTile !== 8) {
+					easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_LEFT]);
+				} else if (southernTile === 6 && southWesternTile !== 8 && southWesternTile !== 9 && southWesternTile !== 7 && westernTile !== 4 && westernTile !== 5 && westernTile !== 6 && westernTile !== 8) {
+					easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_LEFT]);
+				} else {
+					console.log("Accessing: the 6tile at " + x + " and " + y + " cannot be accessed from the southwestern tile.")
+				}		
+			}	
 
-			//check for diagonal directions now that have ruled out???
 
+			
 
-		} else if (findCoord === 7) {
-			//check the 7 tile for which directions exist, and if it has access
-		} else if (findCoord === 4) {
-			//check this 4 tile for which directions exist, and if it has acess
-		} else if (findCoord === 5) {
-			//check this 5 tile for which directions exist, and if it has access
-		} else if (findCoord === 8) {
-			//check this 8 tile for which directions exist, and if it has access
-		} else if (findCoord === 9) {
-			//check this 9 tile for which directions exist, and if it has access			
-		}		
+			//check if top left corner
+			// if (y === 0 && x === 0) {
+			// 	//5 directions unavailable: northeast, north, northwest, west, southwest
+			// 	//if true run this code:
+			// 	//don't run setdirection on x y for .TOP, TOP_LEFT...etc.
+			// 	//don't check unavailble directions.
+			// 	//check for remain valid directions. for ex: 6 at 0,0 can also not access south
+			// 	//check for east, southeast, south
+			// 	//check south:
+			// 	if (y !== level.length-1) { //check if southern tile exists
+			// 		//it does, y is 1-6, check if have access from
+			// 		southernTile = level[y+1][x];
+			// 		console.log("Existing: The southern tile below the 6tile at (" + x + ", " + y + ") exists but can never be accessed from the south.");
+
+			// 		if (southernTile) { //6tile can never be accessed from southern tile
+			// 			console.log("Accessing: the 6tile at (" + x + ", " + y + ") is NOT accessible from the southern tile.");
+			// 		}
+			// 	} else { //y === 7
+			// 		//southern tile does NOT exist
+			// 		console.log("Existing: the southern tile below the 6tile at (" + x + ", " + y + ") does NOT exist.");
+			// 	}
+			// 	//check east
+			// 	if (x !== level[y].length-1) { //check if eastern tile exists
+			// 		//it does, x is 1-10. check if have acess from
+			// 		easternTile = level[y][x+1];
+			// 		console.log("Existing: The eastern tile right of the 6tile at (" + x + ", " + y + ") exists.");
+				
+			// 		if (easternTile !== 1 && easternTile !== 5 && easternTile !== 9) {
+			// 			easystar.setDirectionalCondition(x, y, [EasyStar.RIGHT]);
+			// 			console.log("Accessing: the 6tile at (" + x + ", " + y + ") is accessible from the eastern tile.");
+
+			// 		} else {
+			// 			console.log("Accessing: the 6tile at (" + x + ", " + y + ") is NOT accessible from the eastern tile.");
+			// 		}
+			// 	}
+			// }		
+		}
 	}
 }
-			northernTile = level[y-1][x];
-			southernTile = level[y+1][x];
-			easternTile = level[y][x+1];
-			westernTile = level[y][x-1];
-			northWesternTile = level[y-1][x-1];
-			northEasternTile = level[y-1][x+1];
-			southEasternTile = level[y+1][x+1];
-			southWesternTile = level[y+1][x-1];
+			// northernTile = level[y-1][x];
+			// southernTile = level[y+1][x];
+			// easternTile = level[y][x+1];
+			// westernTile = level[y][x-1];
+			// northWesternTile = level[y-1][x-1];
+			// northEasternTile = level[y-1][x+1];
+			// southEasternTile = level[y+1][x+1];
+			// southWesternTile = level[y+1][x-1];
 
 			
 
@@ -332,7 +311,7 @@ var init = function () {
 	easystar.setDirectionalCondition(4, 3, [EasyStar.TOP, EasyStar.TOP_LEFT, EasyStar.LEFT, EasyStar.BOTTOM, EasyStar.BOTTOM_RIGHT, EasyStar.RIGHT, EasyStar.TOP_RIGHT]);
 
 	//if 9tile
-	easystar.setDirectionalCondition(4, 1, [EasyStar.BOTTOM_LEFT, EasyStar.BOTTOM, EasyStar.BOTTOM_RIGHT]);
+	easystar.setDirectionalCondition(4, 1, [EasyStar.BOTTOM_LEFT, EasyStar.BOTTOM, EasyStar.BOTTOM_RIGHT, EasyStar.RIGHT]);
 	easystar.setDirectionalCondition(3, 2, [EasyStar.TOP_RIGHT, EasyStar.RIGHT, EasyStar.BOTTOM_RIGHT, EasyStar.BOTTOM]);
 	easystar.setDirectionalCondition(6, 3, [EasyStar.TOP_RIGHT, EasyStar.RIGHT, EasyStar.BOTTOM_RIGHT, EasyStar.BOTTOM, EasyStar.BOTTOM_LEFT]);
 
@@ -354,7 +333,7 @@ var init = function () {
 	//if 7tile
 
 
-	easystar.findPath(0, 0, 4, 1, function( path ) {
+	easystar.findPath(0, 0, 3, 2, function( path ) {
 
 	    if (path === null) {
 	        console.log("The path to the destination point was not found.");
