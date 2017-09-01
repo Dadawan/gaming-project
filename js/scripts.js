@@ -123,7 +123,7 @@ var getCoordY;
 // level[y-1][x+1];
 
 // var southEasternTile
-// evel[y+1][x+1];
+// level[y+1][x+1];
 
 // var southWesternTile
 // level[y+1][x-1];	
@@ -172,7 +172,7 @@ function checkTileExistence(x, y) {
 		//if true, then northern tile doesn't exist
 		case topLeftCorner:
 			//check east, southeast, south 
-			//invoke checkEast(x, y), checkSouthwest
+			//invoke checkEast(x, y), checksoutheast
 			break;
 		case topRightCorner: 
 			//check southwest, south, west
@@ -185,28 +185,51 @@ function checkTileExistence(x, y) {
 		//check southerntile existence
 		case bottomLeftCorner:
 			//check east, northeast, north
-
+			break;			
 		case bottomRightCorner:
-
+			//check  west, northwest, north	
+			break;
 		case alongBottomWall:
+			//check west, northwest, north, northeast, east 
+			break;
 
 
 		//check easterntile existence
 		case topRightCorner:
-		case bottomRightCorner
-		case alongRightWall;
+			//check southwest, south, west
+			break;
+		case bottomRightCorner:
+			//check  west, northwest, north
+			break;			
+		case alongRightWall:
+			//check south, southwest, west, northwest, north
+			break;
 
 
 		//check westerntile existence
-		case: topLeftCorner
-		case: bottomLeftCorner
-		case alongLeftWall
+		case topLeftCorner:
+			//invoke checkEast(x, y), checkSouthwest
+			break;
+		case bottomLeftCorner:
+			//check east, northeast, north		
+			break;
+		case alongLeftWall:
+			//check north, northeast, east, southeast,south
+			break;
 
 		//if none of those are true, then the current tile is not a corner or along the wall edges and can be safely checked for ALL directions
 		default:
+			checkNorth(x, y);
+			checkSouth(x, y);
+			checkEast(x, y);
+			checkWest(x, y);
+			checkNorthEast(x, y);
+			checkNorthWest(x, y);
+			checkSouthEast(x, y);
+			checkSouthWest(x, y);
 			//another switch statement: check southerntile existence or check all existences at same time
 
-			//checkNorth(x, y)
+			//checkNorth(x, y) checkEast() checkSoutheast(), etc...
 	}
 }
 
@@ -218,10 +241,114 @@ function checkEast(x, y) {
 
 	if (currentTileEval === 6) {
 		switch(true) {
-			case easternTile !== 1 && easternTile !== 5 && easternTile !== 9:
-
+			case (easternTile !== 1 && easternTile !== 5 && easternTile !== 9):
+				easystar.setDirectionalCondition(x, y, [EasyStar.RIGHT]);
 			default:
+		}
+	}
 
+	// if (currentTileEval === 7) {
+	// 	switch(true) {
+	// 		case lakjeflah:
+	// 		default: 
+	// 	}
+	// }
+}
+
+function checkWest(x, y) {
+	var westernTile = level[y][x-1];
+
+	if (currentTileEval === 6) {
+		switch(true) {
+			case (westernTile !== 1 && westernTile !== 4 && westernTile !== 8):
+				easystar.setDirectionalCondition(x, y, [EasyStar.LEFT]);
+			default:
+		}
+	}
+}
+
+function checkNorth(x, y) {
+	var northernTile = level[y-1][x];
+
+	if (currentTileEval === 6) {
+		switch(true) {
+			case (northernTile !== 1 && northernTile !== 4 && northernTile !== 5 && northernTile !== 6):
+				easystar.setDirectionalCondition(x, y, [EasyStar.TOP]);
+			default:
+		}
+	}
+}
+
+function checkSouth(x, y) {
+	var southernTile = level[y+1][x];
+
+	if (currentTileEval === 6) {
+		switch(true) {
+			default: 	
+				console.log("This 6tile (" + x + ", " + y + ") should not be accessed from the south.");
+		}
+	}
+}
+
+function checkNorthWest(x, y) {
+	var northWesternTile = level[y-1][x-1];
+
+	// if (currentTileEval === 6) {
+	// 	switch(true) {
+	// 		case:
+	// 		default:
+	// 	}
+	// }
+}
+
+function checkNorthEast(x, y) {
+	var northEasternTile = level[y-1][x+1];
+}
+
+function checkSouthWest(x, y) {
+	var southWesternTile = level[y+1][x-1];
+	var westernTile = level[y][x-1];
+	var southernTile = level[y+1][x];
+
+	if (currentTileEval === 6) {
+		switch(true) {
+			case (westernTile === 6 || westernTile === 4 || westernTile === 5 || westernTile === 8):
+				console.log("This 6tile (" + x + ", " + y + ") should not be accessed from the southwest.");
+				break;
+			case (southWesternTile === 8 || southWesternTile === 7 || southWesternTile === 9):
+				console.log("This 6tile (" + x + ", " + y + ") should not be accessed from the southeast.");
+				break;
+			default:
+				easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_LEFT]);
+		} 
+	}
+}
+
+function checkSouthEast(x, y) {
+	var southEasternTile = level[y+1][x+1];
+	var easternTile = level[y][x+1];
+	var southernTile = level[y+1][x];
+
+	if (currentTileEval === 6) {
+		switch(true) {
+			case (easternTile === 6 || easternTile === 4 || easternTile === 5 || easternTile === 9):
+				console.log("This 6tile (" + x + ", " + y + ") should not be accessed from the southeast.");
+				break;
+			case (southEasternTile === 7 || southEasternTile === 8 || southEasternTile === 9):
+				console.log("This 6tile (" + x + ", " + y + ") should not be accessed from the southeast.");				
+				break;
+			case (easternTile === 0 && southEasternTile === 0):
+				easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_RIGHT]);
+				break;
+			case (southernTile === 0 && southEasternTile === 0 && easternTile !== 4 && easternTile !== 5 && easternTile !== 6 && easternTile !== 9):
+				easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_RIGHT]);
+				break;
+			case (southernTile === 0 && easternTile === 0 && southEasternTile === 0):
+				easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_RIGHT]);
+			case (southernTile === 8 || southernTile === 9 || southernTile === 7 || southernTile === 6 && easternTile !== 6 && easternTile !== 5 && easternTile !== 4 && easternTile !== 9):
+				easystar.setDirectionalCondition(x, y, [EasyStar.BOTTOM_RIGHT]);
+			default:
+				console.log("This 6tile (" + x + ", " + y + ") should not be accessed from the southeast.");
 		}
 	}
 }
@@ -525,28 +652,28 @@ var init = function () {
 	easystar.enableCornerCutting();
 	easystar.enableDiagonals();
 	
-	//if 4tile
-	// easystar.setDirectionalCondition(3, 1, [EasyStar.TOP, EasyStar.TOP_LEFT, EasyStar.LEFT, EasyStar.BOTTOM_LEFT]);
-	// easystar.setDirectionalCondition(2, 2, [EasyStar.TOP, EasyStar.TOP_LEFT, EasyStar.LEFT, EasyStar.BOTTOM_LEFT]);
-	// easystar.setDirectionalCondition(7, 4, [EasyStar.TOP, EasyStar.TOP_LEFT, EasyStar.LEFT, EasyStar.TOP_RIGHT]);
+	// if 4tile
+	easystar.setDirectionalCondition(3, 1, [EasyStar.TOP, EasyStar.TOP_LEFT, EasyStar.LEFT, EasyStar.BOTTOM_LEFT]);
+	easystar.setDirectionalCondition(2, 2, [EasyStar.TOP, EasyStar.TOP_LEFT, EasyStar.LEFT, EasyStar.BOTTOM_LEFT]);
+	easystar.setDirectionalCondition(7, 4, [EasyStar.TOP, EasyStar.TOP_LEFT, EasyStar.LEFT, EasyStar.TOP_RIGHT]);
 	
-	// //if 0tile
-	// easystar.setDirectionalCondition(4, 2, [EasyStar.TOP, EasyStar.LEFT, EasyStar.BOTTOM_LEFT, EasyStar.BOTTOM, EasyStar.BOTTOM_RIGHT, EasyStar.RIGHT, EasyStar.TOP_RIGHT]);
-	// easystar.setDirectionalCondition(4, 3, [EasyStar.TOP, EasyStar.TOP_LEFT, EasyStar.LEFT, EasyStar.BOTTOM, EasyStar.BOTTOM_RIGHT, EasyStar.RIGHT, EasyStar.TOP_RIGHT]);
+	//if 0tile
+	easystar.setDirectionalCondition(4, 2, [EasyStar.TOP, EasyStar.LEFT, EasyStar.BOTTOM_LEFT, EasyStar.BOTTOM, EasyStar.BOTTOM_RIGHT, EasyStar.RIGHT, EasyStar.TOP_RIGHT]);
+	easystar.setDirectionalCondition(4, 3, [EasyStar.TOP, EasyStar.TOP_LEFT, EasyStar.LEFT, EasyStar.BOTTOM, EasyStar.BOTTOM_RIGHT, EasyStar.RIGHT, EasyStar.TOP_RIGHT]);
 
-	// //if 9tile
-	// easystar.setDirectionalCondition(4, 1, [EasyStar.BOTTOM_LEFT, EasyStar.BOTTOM, EasyStar.BOTTOM_RIGHT, EasyStar.RIGHT]);
-	// easystar.setDirectionalCondition(3, 2, [EasyStar.TOP_RIGHT, EasyStar.RIGHT, EasyStar.BOTTOM_RIGHT, EasyStar.BOTTOM]);
-	// easystar.setDirectionalCondition(6, 3, [EasyStar.TOP_RIGHT, EasyStar.RIGHT, EasyStar.BOTTOM_RIGHT, EasyStar.BOTTOM, EasyStar.BOTTOM_LEFT]);
+	//if 9tile
+	easystar.setDirectionalCondition(4, 1, [EasyStar.BOTTOM_LEFT, EasyStar.BOTTOM, EasyStar.BOTTOM_RIGHT, EasyStar.RIGHT]);
+	easystar.setDirectionalCondition(3, 2, [EasyStar.TOP_RIGHT, EasyStar.RIGHT, EasyStar.BOTTOM_RIGHT, EasyStar.BOTTOM]);
+	easystar.setDirectionalCondition(6, 3, [EasyStar.TOP_RIGHT, EasyStar.RIGHT, EasyStar.BOTTOM_RIGHT, EasyStar.BOTTOM, EasyStar.BOTTOM_LEFT]);
 
-	// //if 8tile
-	// easystar.setDirectionalCondition(2, 3, [EasyStar.TOP_LEFT, EasyStar.RIGHT, EasyStar.BOTTOM_LEFT, EasyStar.BOTTOM, EasyStar.BOTTOM_RIGHT]);
-	// easystar.setDirectionalCondition(3, 4, [EasyStar.TOP_LEFT, EasyStar.LEFT, EasyStar.BOTTOM_LEFT, EasyStar.BOTTOM, EasyStar.BOTTOM_RIGHT]);
-	// easystar.setDirectionalCondition(5, 3, [EasyStar.TOP_LEFT, EasyStar.LEFT, EasyStar.BOTTOM_LEFT, EasyStar.BOTTOM, EasyStar.BOTTOM_RIGHT]);
+	//if 8tile
+	easystar.setDirectionalCondition(2, 3, [EasyStar.TOP_LEFT, EasyStar.RIGHT, EasyStar.BOTTOM_LEFT, EasyStar.BOTTOM, EasyStar.BOTTOM_RIGHT]);
+	easystar.setDirectionalCondition(3, 4, [EasyStar.TOP_LEFT, EasyStar.LEFT, EasyStar.BOTTOM_LEFT, EasyStar.BOTTOM, EasyStar.BOTTOM_RIGHT]);
+	easystar.setDirectionalCondition(5, 3, [EasyStar.TOP_LEFT, EasyStar.LEFT, EasyStar.BOTTOM_LEFT, EasyStar.BOTTOM, EasyStar.BOTTOM_RIGHT]);
 
-	// //if 5tile
-	// easystar.setDirectionalCondition(3, 3, [EasyStar.TOP, EasyStar.TOP_RIGHT, EasyStar.RIGHT, EasyStar.BOTTOM_RIGHT]);
-	// easystar.setDirectionalCondition(4, 4, [EasyStar.TOP, EasyStar.TOP_LEFT, EasyStar.TOP_RIGHT, EasyStar.RIGHT]);
+	//if 5tile
+	easystar.setDirectionalCondition(3, 3, [EasyStar.TOP, EasyStar.TOP_RIGHT, EasyStar.RIGHT, EasyStar.BOTTOM_RIGHT]);
+	easystar.setDirectionalCondition(4, 4, [EasyStar.TOP, EasyStar.TOP_LEFT, EasyStar.TOP_RIGHT, EasyStar.RIGHT]);
 
 	//if 6tile
 	// easystar.setDirectionalCondition(5, 4, [EasyStar.TOP, EasyStar.TOP_LEFT, EasyStar.LEFT, EasyStar.RIGHT, EasyStar.TOP_RIGHT]);
@@ -557,7 +684,7 @@ var init = function () {
 	//if 7tile
 
 
-	easystar.findPath(4, 1, 6, 2, function( path ) {
+	easystar.findPath(0, 0, 3, 2, function( path ) {
 
 	    if (path === null) {
 	        console.log("The path to the destination point was not found.");
