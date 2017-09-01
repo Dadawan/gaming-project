@@ -319,7 +319,6 @@ if (findCoord === 6) {
 				easystar.setDirectionalCondition(x, y, [EasyStar.TOP_RIGHT]);				
 			} else {
 				console.log("Map notes: the 6tile at " + x + " and " + y + " cannot be accessed from the northeastern tile.")
-				break;
 			}
 
 			//can it be accessed from the southwest?
@@ -419,3 +418,28 @@ if (findCoord === 6) {
 			// var southWesternTile = level[y+1][x-1];
 
 //put this code after findPath() run, but before calculate. It will 
+
+	//if successful, pass xy into next round of checks for north direction
+	switch(true) {
+		//if case is false, run block of code until break. if no break in statement, keep running next code
+
+		//check northerntile existence
+		//if true, then northern tile doesn't exist
+		case topLeftCorner:
+			//check east, southeast, south 
+			//invoke checkEast(x, y), checkSouthwest
+			break;
+		case topRightCorner: 
+			//check southwest, south, west
+			break;
+		case alongTopWall:
+			//check west, southwest, south, southeast, east
+			break;
+
+
+		//if none of those are true, then northern tile exists
+		default:
+			//another switch statement: check southerntile existence or check all existences at same time
+
+			//checkNorth(x, y)
+	}

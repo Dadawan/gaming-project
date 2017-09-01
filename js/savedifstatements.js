@@ -1,4 +1,10 @@
 			//check if top left corner
+			//5 directions unavailable: northeast, north, northwest, west, southwest
+				//if true run this code:
+				//don't run setdirection on x y for .TOP, TOP_LEFT...etc.
+				//don't check unavailble directions.
+				//check for remain valid directions. for ex: 6 at 0,0 can also not access south
+				//check for east, southeast, south
 			if (y === 0 && x === 0)
 			} else if (y === 0 && x === level[y].length-1) {
 				//check if top right corner
