@@ -10,9 +10,6 @@ var canvas=document.getElementById('myCanvas');
 var context=canvas.getContext('2d');
 var easystar = new EasyStar.js();
 
-console.log(easyray);
-
-
 
 //Loading level
 
@@ -78,8 +75,6 @@ var villains = {
 //nw can be: yes from nw if nw 0 && north tile !== 5 && 4, 6, 9, 1 while western tile !==  8, 9, 7, 1, 4
 //nw can be: yes from nw if nw 
 
-
-
 var level = [
  //X 0  1  2  3  4  5  6  7  8  9 10  11    Y
 	[0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], //0
@@ -91,29 +86,6 @@ var level = [
 	[1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0], //6
 	[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1], //7
 ];
-
-var tilemap = [
-    [ 0, 0, 0, 1 ],
-    [ 1, 0, 0, 1 ],
-    [ 1, 0, 0, 1 ],
-    [ 1, 1, 1, 1 ]
-]
-
-function getTileAt(x, y) {
-  return tilemap[y][x]
-}
-
-var rayStart = [1, 0]
-var rayDir = [0, 1]
-var maxDistance = 100
-
-var hitPos = new Array(2)
-var hitNormal = new Array(2)
-
-var tile = easyray(getTileAt, rayStart, rayDir, maxDistance, hitPos, hitNormal)
-
-console.log(hitPos)
-console.log(hitNormal)
 
 //noffle test if browserify worked:
 // var tilemap = [

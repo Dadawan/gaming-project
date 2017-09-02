@@ -1,10 +1,8 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-//test:
+ (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 
 
-
-
-///****
+//put on window for access:
+// (function() {
 
 //Starting Up:
 var canvas=document.getElementById('myCanvas');
@@ -82,28 +80,45 @@ var level = [
 	[0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], //0
 	[0, 0, 0, 4, 9, 0, 0, 0, 1, 1, 1, 1], //1 
 	[0, 0, 4, 9, 0, 6, 6, 0, 0, 0, 1, 1], //2
-	[0, 0, 8, 5, 0, 8, 9, 0, 0, 0, 1, 1], //3
+	[0, 0, 0, 5, 0, 8, 9, 0, 0, 0, 1, 1], //3
 	[0, 0, 0, 8, 5, 6, 6, 4, 0, 0, 1, 1], //4
 	[0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0], //5
 	[1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0], //6
 	[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1], //7
 ];
 
+//character corners save reference to
+//xy
+//so topleft corner = x,y
+//toprightcorner = x+1, y
+//bottomleftcorner = x, y+1
+//bottomrightcorner = x+1, y+1
+
 //noffle test if browserify worked:
-var tilemap = [
- //x  0  1  2  3	  y
-    [ 0, 0, 0, 1 ], //0
-    [ 1, 0, 0, 1 ], //1
-    [ 1, 0, 0, 1 ], //2 
-    [ 1, 1, 1, 1 ]  //3
-]
+// var tilemap = [
+//  //x  0  1  2  3	  y
+//     [ 0, 0, 0, 1 ], //0
+//     [ 1, 0, 0, 1 ], //1
+//     [ 1, 0, 0, 1 ], //2 
+//     [ 1, 1, 1, 1 ]  //3
+// ]
+
+//Notes: for negative directions, must minus one in direction casting. so if negative y coordinate (heading north), raystart 1,6 and ray dir 0,-1
+//shooting north (x, y-1)
+//will return 1,1 for the hit at 1,0. therefore if the negative 1, 1-1
+//shooting west (x-1, y)
+//for 5,6 raystart and raydir -1,0. returned 1,6 but should be 0, 6. therefore if negative, make it 1-1, 6
+//diagonals:
+//northwest (x-1 and y-1)
+//southwest (x-1, y+1)
 
 function getTileAt(x, y) {
-  return tilemap[y][x]
+  return level[y][x]
 }
 
-var rayStart = [1, 0]
-var rayDir = [0, 1]
+var rayStart = [2, 3]
+//remember ray dir if an enemny corner, is counted spaces relative to ray start or shooting corner.
+var rayDir = [3, 4]
 var maxDistance = 100
 
 var hitPos = new Array(2)
@@ -135,8 +150,8 @@ console.log(hitNormal)
 var mapHeight = level.length;
 var mapWidth = level[0].length
 var mapScale = 100;
-document.getElementById("myCanvas").height = level.length * 100;
-document.getElementById("myCanvas").width = level[0].length * 100;
+document.getElementById("myCanvas").height = level.length * mapScale;
+document.getElementById("myCanvas").width = level[0].length * mapScale;
 
 var findTile;
 var getCoordX; 
@@ -992,6 +1007,8 @@ var init = function () {
 	    		console.log("P: " + i + ", X: " + path[i].x + ", Y: " + path[i].y);
 	    		coordinatesToDraw1.push(path[i].x);
 	    		coordinatesToDraw2.push(path[i].y);
+
+
 	    
     			// window.setTimeout(function drawPathNow() {
     			// 	context.drawImage(image, path[i].x*100+10, path[i].y*100+10, 80, 80);
@@ -1014,6 +1031,9 @@ var init = function () {
 	});
 
 
+	//declare init to the window?
+
+
 	easystar.calculate()
 
 	
@@ -1027,33 +1047,44 @@ var init = function () {
 	// 		}
 	// 	}
 	// });
-};
-
-
 //refactor so can't draw path without loading page over and over again
 //
 //0,0 === 10,10
 //1,1 === 110, 110
 //,1,2 === 110, 210
-function clearImage() {
-	if (coordinatesToDraw1.length !== 1) {
-			context.clearRect(coordinatesToDraw1[0]*100+10, coordinatesToDraw2[0]*100+10, 80, 80);
 
-		coordinatesToDraw1.splice(0, 1);
-		coordinatesToDraw2.splice(0, 1);
-		setTimeout(drawPathNow, 200)
-	} 
-	// coordinatesToDraw1.splice(0, 1);
-	// coordinatesToDraw2.splice(0, 1);
-	// setTimeout(drawPathNow, 500)
-}
 
-function drawPathNow() {
-	context.drawImage(jyn, coordinatesToDraw1[0]*100+10, coordinatesToDraw2[0]*100+10, 80, 80);
-	setTimeout(clearImage, 500);
-}	
+
+// //refactor so can't draw path without loading page over and over again
+// //
+// //0,0 === 10,10
+// //1,1 === 110, 110
+// //,1,2 === 110, 210
+// function drawPathNow() {
+// 	context.drawImage(jyn, coordinatesToDraw1[0]*100+10, coordinatesToDraw2[0]*100+10, 80, 80);
+// 	window.setTimeout(clearImage, 500);
+// }	
+
+// function clearImage() {
+// 	if (coordinatesToDraw1.length !== 1) {
+// 			context.clearRect(coordinatesToDraw1[0]*100+10, coordinatesToDraw2[0]*100+10, 80, 80);
+
+// 		coordinatesToDraw1.splice(0, 1);
+// 		coordinatesToDraw2.splice(0, 1);
+// 		window.setTimeout(drawPathNow, 200)
+// 	} 
+// 	// coordinatesToDraw1.splice(0, 1);
+// 	// coordinatesToDraw2.splice(0, 1);
+// 	// setTimeout(drawPathNow, 500)
+// }
+
 // window.onload can work without <body onload="">
 window.onload = init;
+
+
+}
+
+
 
 },{"raycast-2d-tilemap":3}],2:[function(require,module,exports){
 "use strict"
@@ -1221,5 +1252,6 @@ module.exports =
 
   return ret
 }
+
 
 },{"fast-voxel-raycast":2}]},{},[1]);
