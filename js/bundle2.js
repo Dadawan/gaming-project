@@ -1,0 +1,168 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+"use strict"
+
+function traceRay_impl( getVoxel,
+	px, py, pz,
+	dx, dy, dz,
+	max_d, hit_pos, hit_norm) {
+	
+	// consider raycast vector to be parametrized by t
+	//   vec = [px,py,pz] + t * [dx,dy,dz]
+	
+	// algo below is as described by this paper:
+	// http://www.cse.chalmers.se/edu/year/2010/course/TDA361/grid.pdf
+	
+	var t = 0.0
+		, floor = Math.floor
+		, ix = floor(px) | 0
+		, iy = floor(py) | 0
+		, iz = floor(pz) | 0
+
+		, stepx = (dx > 0) ? 1 : -1
+		, stepy = (dy > 0) ? 1 : -1
+		, stepz = (dz > 0) ? 1 : -1
+		
+	// dx,dy,dz are already normalized
+		, txDelta = Math.abs(1 / dx)
+		, tyDelta = Math.abs(1 / dy)
+		, tzDelta = Math.abs(1 / dz)
+
+		, xdist = (stepx > 0) ? (ix + 1 - px) : (px - ix)
+		, ydist = (stepy > 0) ? (iy + 1 - py) : (py - iy)
+		, zdist = (stepz > 0) ? (iz + 1 - pz) : (pz - iz)
+		
+	// location of nearest voxel boundary, in units of t 
+		, txMax = (txDelta < Infinity) ? txDelta * xdist : Infinity
+		, tyMax = (tyDelta < Infinity) ? tyDelta * ydist : Infinity
+		, tzMax = (tzDelta < Infinity) ? tzDelta * zdist : Infinity
+
+		, steppedIndex = -1
+	
+	// main loop along raycast vector
+	while (t <= max_d) {
+		
+		// exit check
+		var b = getVoxel(ix, iy, iz)
+		if (b) {
+			if (hit_pos) {
+				hit_pos[0] = px + t * dx
+				hit_pos[1] = py + t * dy
+				hit_pos[2] = pz + t * dz
+			}
+			if (hit_norm) {
+				hit_norm[0] = hit_norm[1] = hit_norm[2] = 0
+				if (steppedIndex === 0) hit_norm[0] = -stepx
+				if (steppedIndex === 1) hit_norm[1] = -stepy
+				if (steppedIndex === 2) hit_norm[2] = -stepz
+			}
+			return b
+		}
+		
+		// advance t to next nearest voxel boundary
+		if (txMax < tyMax) {
+			if (txMax < tzMax) {
+				ix += stepx
+				t = txMax
+				txMax += txDelta
+				steppedIndex = 0
+			} else {
+				iz += stepz
+				t = tzMax
+				tzMax += tzDelta
+				steppedIndex = 2
+			}
+		} else {
+			if (tyMax < tzMax) {
+				iy += stepy
+				t = tyMax
+				tyMax += tyDelta
+				steppedIndex = 1
+			} else {
+				iz += stepz
+				t = tzMax
+				tzMax += tzDelta
+				steppedIndex = 2
+			}
+		}
+
+	}
+	
+	// no voxel hit found
+	if (hit_pos) {
+		hit_pos[0] = px + t * dx
+		hit_pos[1] = py + t * dy
+		hit_pos[2] = pz + t * dz
+	}
+	if (hit_norm) {
+		hit_norm[0] = hit_norm[1] = hit_norm[2] = 0
+	}
+
+	return 0
+
+}
+
+
+// conform inputs
+
+function traceRay(getVoxel, origin, direction, max_d, hit_pos, hit_norm) {
+	var px = +origin[0]
+		, py = +origin[1]
+		, pz = +origin[2]
+		, dx = +direction[0]
+		, dy = +direction[1]
+		, dz = +direction[2]
+		, ds = Math.sqrt(dx * dx + dy * dy + dz * dz)
+
+	if (ds === 0) {
+		throw new Error("Can't raycast along a zero vector")
+	}
+
+	dx /= ds
+	dy /= ds
+	dz /= ds
+	if (typeof (max_d) === "undefined") {
+		max_d = 64.0
+	} else {
+		max_d = +max_d
+	}
+	return traceRay_impl(getVoxel, px, py, pz, dx, dy, dz, max_d, hit_pos, hit_norm)
+}
+
+module.exports = traceRay
+},{}],2:[function(require,module,exports){
+var raycast = require('fast-voxel-raycast')
+
+// TODO(sww): is this safe?
+var rayStart3d = new Array(3)
+var rayDir3d = new Array(3)
+var hitPos3d = new Array(3)
+var hitNormal3d = new Array(3)
+
+module.exports =
+    function (getTileAt, rayStart, rayDir, maxDistance, hitPos, hitNormal) {
+
+  rayStart3d[0] = rayStart[0]
+  rayStart3d[1] = rayStart[1]
+  rayStart3d[2] = 0
+
+  rayDir3d[0] = rayDir[0]
+  rayDir3d[1] = rayDir[1]
+  rayDir3d[2] = 0
+
+  var ret = raycast(getTileAt, rayStart3d, rayDir3d, maxDistance, hitPos3d,
+      hitNormal3d)
+
+  if (hitPos) {
+    hitPos[0] = hitPos3d[0]
+    hitPos[1] = hitPos3d[1]
+  }
+
+  if (hitNormal) {
+    hitNormal[0] = hitNormal3d[0]
+    hitNormal[1] = hitNormal3d[1]
+  }
+
+  return ret
+}
+
+},{"fast-voxel-raycast":1}]},{},[2]);
