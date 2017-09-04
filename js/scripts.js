@@ -25,7 +25,17 @@ var easystar = new EasyStar.js();
 //nw can be: yes from nw if nw 
 
 
+//set top left corner cost, if character position is equal to that, that point is the additional point cost "location"
+//
+var b = function() {
+	easystar.setAdditionalPointCost(x, y, 2);
+	//remove additional point costs for all other points once inside at least one of them
+	//so constant resetting. enter into for first time, point cost is valid, move to, once enter that square, pause, remove additional point cost for all other blue points for that x,y character
+	//when another character enters into, before move into, set 
+	// easystar.removeAdditionalPointCost
+}
 
+//for pathfinding
 var level = [
  //X 0  1  2  3  4  5  6  7  8  9 10  11    Y
 	[0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], //0
@@ -38,17 +48,45 @@ var level = [
 	[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1], //7
 ];
 
-// var levelLayer = [
-//  //X 0  1  2  3  4  5  6  7  8  9 10  11    Y
-// 	[0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], //0
-// 	[0, 0, 0, 4, 9, 0, 0, 0, 1, 1, 1, 1], //1 
-// 	[0, 0, 4, 9, 0, 6, 6, 0, 0, 0, 1, 1], //2
-// 	[0, 0, 8, 5, 0, 8, 9, 0, 0, 0, 1, 1], //3
-// 	[0, 0, 0, 8, 5, 6, 6, 4, 0, 0, 1, 1], //4
-// 	[0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0], //5
-// 	[1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0], //6
-// 	[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1], //7
-// ];
+//red solid lines and blue lines terrain
+//pathfinding may reference this layer
+var terrainAndRedLayer = [
+ //X 0  1  2  3  4  5  6  7  8  9 10  11    Y
+	[0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], //0
+	[0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1], //1 
+	[0, 0, 0, 0, 0, 6, 6, 0, 0, 0, 1, 1], //2
+	[0, 0, 0, 0, 0, 8, 9, 0, 0, 0, 1, 1], //3
+	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], //4
+	[b, b, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //5
+	[1, b, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //6
+	[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1], //7
+];
+
+//for line of sight reference
+var dottedLayer = [
+ //X 0  1  2  3  4  5  6  7  8  9 10  11    Y
+	[0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], //0
+	[0, 0, 0, 4, 9, 0, 0, 0, 1, 1, 1, 1], //1 
+	[0, 0, 4, 9, 0, 6, 6, 0, 0, 0, 1, 1], //2
+	[0, 0, 8, 5, 0, 8, 9, 0, 0, 0, 1, 1], //3
+	[7, 7, 7, 8, 5, 6, 6, 4, 0, 0, 1, 1], //4
+	[0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0], //5
+	[1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0], //6
+	[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1], //7
+];
+
+//main los map
+var sightLayer = [
+ //X 0  1  2  3  4  5  6  7  8  9 10  11    Y
+	[0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], //0
+	[0, 0, 0, 4, 9, 0, 0, 0, 1, 1, 1, 1], //1 
+	[0, 0, 4, 9, 0, 6, 6, 0, 0, 0, 1, 1], //2
+	[0, 0, 8, 5, 0, 8, 9, 0, 0, 0, 1, 1], //3
+	[7, 7, 7, 8, 5, 6, 6, 4, 0, 0, 1, 1], //4
+	[0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0], //5
+	[1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0], //6
+	[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1], //7
+]
 
 //deployment
 //levelLayer[0][2], x-1 y0, x+1 y0 || x-1, y+1 || x0, y+1 || x+1, y+1
@@ -907,8 +945,110 @@ for (var y = 0; y < level.length; y+=1) {
 			context.stroke();
 			context.closePath();
 		}
+
 	}
 }
+
+//number tiles strictly for if wall lines are red for impassible and no LOS
+//b tile for blue terrain
+//2 and 3 for door
+//loop through levelLayer map for terrain and other colors
+
+//terrain and red layer
+//solid red lines and blue line terrain
+for (var y = 0; y < level.length; y+=1) {
+	for (var x=0; x< level[y].length; x+=1) {
+
+		//if difficult blue water terrain
+		if (terrainAndRedLayer[y][x] === b) {
+			console.log("here's a b!" + x+ y)
+			context.beginPath();
+			context.lineWidth = mapScale/20;
+			context.strokeStyle = "blue";
+			context.strokeRect(x*mapScale, y*mapScale, mapScale, mapScale);
+			context.closePath();
+		//if solid red line tiles for 2-9 tiles?
+		} else if (terrainAndRedLayer[y][x] === 8) {
+			context.beginPath();
+			context.moveTo(x*mapScale, y*mapScale)
+			context.lineTo(x*mapScale+mapScale, y*mapScale)
+			context.lineTo(x*mapScale+mapScale, y*mapScale+mapScale)
+			context.lineWidth = mapScale/20;
+			context.strokeStyle = "red";
+			context.stroke();
+			context.closePath();
+		} else if (terrainAndRedLayer[y][x] === 9) {
+			context.beginPath();
+			context.moveTo(x*mapScale, y*mapScale+mapScale)
+			context.lineTo(x*mapScale, y*mapScale)
+			context.lineTo(x*mapScale+mapScale, y*mapScale)
+			context.lineWidth = mapScale/20;
+			context.strokeStyle = "red";
+			context.stroke();
+			context.closePath();
+		} else if (terrainAndRedLayer[y][x] === 7) {
+			context.beginPath();
+			context.moveTo(x*mapScale, y*mapScale)
+			context.lineTo(x*mapScale+mapScale, y*mapScale)
+			context.lineWidth = mapScale/20;
+			context.strokeStyle = "red";
+			context.stroke();
+			context.closePath();
+		//if a door. for melee, must be in adjacent space to attack. for line of sight range, drawing line of sight to square it shares an edge with.
+		}
+	}
+}
+
+//dotted layer
+for (var y = 0; y < level.length; y+=1) {
+	for (var x=0; x< level[y].length; x+=1) {
+		//doors to aim at. objects and terminals like crates don't affect los anyway
+		if (dottedLayer[y][x] === 2) {
+			context.beginPath();
+			context.setLineDash([mapScale/3, mapScale/6.67]);
+			context.moveTo(x*mapScale+mapScale, y*mapScale)
+			context.lineTo(x*mapScale+mapScale, y*mapScale+mapScale)
+			context.lineWidth = mapScale/15;
+			context.strokeStyle = "red";
+			context.stroke();
+			context.closePath();
+		} else if (dottedLayer[y][x] === 3) {
+			context.beginPath();
+			context.setLineDash([mapScale/3, mapScale/6.67]);
+			context.moveTo(x*mapScale, y*mapScale)
+			context.lineTo(x*mapScale, y*mapScale+mapScale)
+			context.lineWidth = mapScale/15;
+			context.strokeStyle = "red";
+			context.stroke();
+			context.closePath();
+			//if dotted red line of any kind of tile 2-9
+		} else if (dottedLayer[y][x] === 7) {
+			context.beginPath();
+			context.setLineDash([mapScale/3, mapScale/6.67]);
+			context.moveTo(x*mapScale, y*mapScale)
+			context.lineTo(x*mapScale+mapScale, y*mapScale)
+			context.lineWidth = mapScale/10;
+			context.strokeStyle = "red";
+			context.stroke();
+			context.closePath();
+		}
+	}
+}
+
+//regular LOS layer sightLayer is for doors too and reference dotted layer and terrain and red layer and main level layer.
+
+//layer logic:
+//if moving, take into account main level map for pathfinding. This 2d array contains info on walkable, nonwalkable tile and tile cost for different terrain and tile directional access. contains info on diagonal rules if two intersecting is figure === ok but if walls or combination of wall + wall or wall+terrain or terrain+terrain
+//if attacking, take into account/switch to sightMap. This 2d array contains info on character positions (character position info shared from pathfinding map layer)
+// cont'd, dotted red lines to shoot through
+
+//drawing the terrain and special walls
+//solid red = impassible and no LOS
+//dotted red = impassible but LOS
+//blue = difficult +1mp to enter but no additional to leave space. color squares blue too.
+//silver gray = doors
+
+//drawing the special interact objects: crates, terminals, tokens
 
 //draw character
 var jyn = new Image();
@@ -1060,6 +1200,7 @@ var drawPathNow = function drawPathNow() {
 // window.onload can work without <body onload="">
 
 //expose to window to use;
+window.easystar = easystar;
 window.onload = init;
 window.calculatePathNow = calculatePathNow;
 window.drawPathNow = drawPathNow;
