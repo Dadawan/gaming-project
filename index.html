@@ -2,26 +2,23 @@
 <html>
   <head>
     <title>Practice game app</title>
-  
   </head>
   <body>
     <h1>Practice game app</h1>
 
-    <button onclick="setTimeout(drawPathNow, 1000);">Draw Path</button>
+    <button onclick="calculatePathNow()">Calculate Path</button>
+    <button onclick="drawPathNow()">Draw Path</button>
+    <button onclick=location=URL>Refresh</button>
 
-<canvas id="myCanvas" width="1000" height="1000" style="border:1px solid #000000;">
-<!-- <canvas id="myCanvas" width="1000" height="1300" style="border:1px solid #000000;"> -->
-</canvas>
+
+
+    <canvas id="myCanvas" width="1000" height ="1000" style="border:0px solid #000000;"></canvas>
   
+    <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="css/styles.css" rel="stylesheet" type="text/css">
+    <script src="js/jquery-3.1.1.js"></script>
     <script src="js/easystar-0.4.1.js"></script>
-    <!-- // <script src="js/testAndy.js"></script> -->
-    <!-- // <script src="js/bundle8.js"></script> -->
-    <!-- // <script src="js/testExpose.js"></script> -->
-    <!-- // <script src="rough-drafts/scripts.js"></script> -->
-
     <script src="js/raycast-2d-tilemap/dist/easyray.js"></script>
     <script src="js/scripts.js"></script>
-
-
   </body>
 </html>

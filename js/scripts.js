@@ -1,68 +1,14 @@
-//test:
-
-
-
-
-///****
-
-//Starting Up:
+(function(){
 var canvas=document.getElementById('myCanvas');
 var context=canvas.getContext('2d');
 var easystar = new EasyStar.js();
 
-console.log(easyray);
 
-
+//organization notes:
+//what functions are helpers? what functions need to be put in an IIFE? what functions need to be tied to user input buttons on DOM?
+//what variables and functions should be exposed to window for global use?
 
 //Loading level
-
-var scenarios = {
-	core: {
-		tutorial: [[]],
-		aftermath: [[]]
-	},
-
-
-}
-
-var heroes = {
-	core: {
-		jyn: {
-			firstName: "Jyn",
-			lastName: "Odan",
-			type: "Range",
-			utility: "Movement",
-		}
-	},
-
-	twinShadows: {
-
-	},
-
-	bespinGambit: {
-
-	},
-
-	returnToHoth: {
-
-	},
-
-	jabbasRealm: {
-
-	}
-}
-
-var allies = {
-
-}
-
-var imperials = {
-	core: {}
-}
-
-var villains = {
-
-}
 
 //var level door closed.
 //var level door opened
@@ -92,28 +38,30 @@ var level = [
 	[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1], //7
 ];
 
-var tilemap = [
-    [ 0, 0, 0, 1 ],
-    [ 1, 0, 0, 1 ],
-    [ 1, 0, 0, 1 ],
-    [ 1, 1, 1, 1 ]
-]
+// var levelLayer = [
+//  //X 0  1  2  3  4  5  6  7  8  9 10  11    Y
+// 	[0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], //0
+// 	[0, 0, 0, 4, 9, 0, 0, 0, 1, 1, 1, 1], //1 
+// 	[0, 0, 4, 9, 0, 6, 6, 0, 0, 0, 1, 1], //2
+// 	[0, 0, 8, 5, 0, 8, 9, 0, 0, 0, 1, 1], //3
+// 	[0, 0, 0, 8, 5, 6, 6, 4, 0, 0, 1, 1], //4
+// 	[0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0], //5
+// 	[1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0], //6
+// 	[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1], //7
+// ];
 
-function getTileAt(x, y) {
-  return tilemap[y][x]
-}
+//deployment
+//levelLayer[0][2], x-1 y0, x+1 y0 || x-1, y+1 || x0, y+1 || x+1, y+1
 
-var rayStart = [1, 0]
-var rayDir = [0, 1]
-var maxDistance = 100
+//terrain
+//difficult: water +1 to enter
+//level[5][1], x y+1 || x-1, y+0
+//draw lines if access tiles (0,5) || (1,5) || (1,6) from north, east, northwest, toggle if leave turn off. don't add more cost.
 
-var hitPos = new Array(2)
-var hitNormal = new Array(2)
+//interacts:
+//terminals, door, crates, exit points, refinforcement points
 
-var tile = easyray(getTileAt, rayStart, rayDir, maxDistance, hitPos, hitNormal)
-
-console.log(hitPos)
-console.log(hitNormal)
+//los layer?
 
 //noffle test if browserify worked:
 // var tilemap = [
@@ -157,12 +105,28 @@ console.log(hitNormal)
 // 	[1, 1, 1, 1, 0, 0, 0, 0, 0, 0] //12
 // ];
 
+function getTileAt(x, y) {
+  return level[y][x]
+}
+
+var rayStart = [1, 0]
+var rayDir = [0, 1]
+var maxDistance = 100
+
+var hitPos = new Array(2)
+var hitNormal = new Array(2)
+
+var tile = easyray(getTileAt, rayStart, rayDir, maxDistance, hitPos, hitNormal)
+
+console.log(hitPos)
+console.log(hitNormal)
+
 //Settings:
 var mapHeight = level.length;
-var mapWidth = level[0].length
-var mapScale = 100;
-document.getElementById("myCanvas").height = level.length * 100;
-document.getElementById("myCanvas").width = level[0].length * 100;
+var mapWidth = level[0].length;
+var mapScale = 50;
+document.getElementById("myCanvas").height = level.length * mapScale;
+document.getElementById("myCanvas").width = level[0].length * mapScale;
 
 var findTile;
 var getCoordX; 
@@ -870,8 +834,8 @@ for (var y =0; y < level.length; y+=1) {
 		var findCoord = level[y][x];
 		if (findCoord === 0 || findCoord === 4 || findCoord === 8 ||  findCoord === 9 || findCoord === 5 || findCoord === 6 || findCoord ===7 || findCoord === 2 || findCoord === 3) {
 			context.beginPath();
-			context.lineWidth = 2;
-			context.strokeRect(x*100, y*100, 100, 100);
+			context.lineWidth = mapScale/50;
+			context.strokeRect(x*mapScale, y*mapScale, mapScale, mapScale);
 			context.closePath();
 		}
 	}
@@ -882,45 +846,45 @@ for (var y = 0; y < level.length; y+=1) {
 	for (var x=0; x< level[y].length; x+=1) {
 		if (level[y][x] === 4) {
 			context.beginPath();
-			context.moveTo(x*100+100, y*100)
-			context.lineTo(x*100+100, y*100+100)
-			context.lineTo(x*100, y*100+100)
-			context.lineWidth = 8;
+			context.moveTo(x*mapScale+mapScale, y*mapScale)
+			context.lineTo(x*mapScale+mapScale, y*mapScale+mapScale)
+			context.lineTo(x*mapScale, y*mapScale+mapScale)
+			context.lineWidth = mapScale/8;
 			context.strokeStyle = "black";
 			context.stroke();
 			context.closePath();
 		} else if (level[y][x] === 9) {
 			context.beginPath();
-			context.moveTo(x*100, y*100+100)
-			context.lineTo(x*100, y*100)
-			context.lineTo(x*100+100, y*100)
-			context.lineWidth = 8;
+			context.moveTo(x*mapScale, y*mapScale+mapScale)
+			context.lineTo(x*mapScale, y*mapScale)
+			context.lineTo(x*mapScale+mapScale, y*mapScale)
+			context.lineWidth = mapScale/8;
 			context.strokeStyle = "black";
 			context.stroke();
 			context.closePath();
 		} else if (level[y][x] === 8) {
 			context.beginPath();
-			context.moveTo(x*100, y*100)
-			context.lineTo(x*100+100, y*100)
-			context.lineTo(x*100+100, y*100+100)
-			context.lineWidth = 8;
+			context.moveTo(x*mapScale, y*mapScale)
+			context.lineTo(x*mapScale+mapScale, y*mapScale)
+			context.lineTo(x*mapScale+mapScale, y*mapScale+mapScale)
+			context.lineWidth = mapScale/8;
 			context.strokeStyle = "black";
 			context.stroke();
 			context.closePath();
 		} else if (level[y][x] === 5) {
 			context.beginPath();
-			context.moveTo(x*100, y*100)
-			context.lineTo(x*100, y*100+100)
-			context.lineTo(x*100+100, y*100+100)
-			context.lineWidth = 8;
+			context.moveTo(x*mapScale, y*mapScale)
+			context.lineTo(x*mapScale, y*mapScale+mapScale)
+			context.lineTo(x*mapScale+mapScale, y*mapScale+mapScale)
+			context.lineWidth = mapScale/8;
 			context.strokeStyle = "black";
 			context.stroke();
 			context.closePath();
 		} else if (level[y][x] === 6) {
 			context.beginPath();
-			context.moveTo(x*100, y*100+100)
-			context.lineTo(x*100+100, y*100+100)
-			context.lineWidth = 8;
+			context.moveTo(x*mapScale, y*mapScale+mapScale)
+			context.lineTo(x*mapScale+mapScale, y*mapScale+mapScale)
+			context.lineWidth = mapScale/8;
 			context.strokeStyle = "black";
 			context.stroke();
 			context.closePath();
@@ -928,17 +892,17 @@ for (var y = 0; y < level.length; y+=1) {
 			//3 is | space
 		} else if (level[y][x] === 2) {
 			context.beginPath();
-			context.moveTo(x*100+100, y*100)
-			context.lineTo(x*100+100, y*100+100)
-			context.lineWidth = 8;
+			context.moveTo(x*mapScale+mapScale, y*mapScale)
+			context.lineTo(x*mapScale+mapScale, y*mapScale+mapScale)
+			context.lineWidth = mapScale/8;
 			context.strokeStyle = "black";
 			context.stroke();
 			context.closePath();
 		} else if (level[y][x] === 3) {
 			context.beginPath();
-			context.moveTo(x*100, y*100)
-			context.lineTo(x*100, y*100+100)
-			context.lineWidth = 8;
+			context.moveTo(x*mapScale, y*mapScale)
+			context.lineTo(x*mapScale, y*mapScale+mapScale)
+			context.lineWidth = mapScale/8;
 			context.strokeStyle = "black";
 			context.stroke();
 			context.closePath();
@@ -948,13 +912,24 @@ for (var y = 0; y < level.length; y+=1) {
 
 //draw character
 var jyn = new Image();
+var stormTrooper = new Image();
+
+//eweb two spaces large figure
+function drawLargeFigure() {
+	context.font = (mapScale/5) + "px serif";
+	context.fillText("E-Web Engineer", 10*mapScale+(mapScale/2), 6*mapScale+(mapScale/2));
+}
+
+drawLargeFigure();
+
 // image.addEventListener('load', function(){
 	// context.drawImage(image, 0*100, 3*100, 98, 98);
 // }, false);
 jyn.src = 'img/jyn.jpg';
-
-var red = new Image();
-red.src = 'img/red.jpg';
+stormTrooper.src = "img/stormtrooper.jpg";
+stormTrooper.addEventListener('load', function(){
+	context.drawImage(stormTrooper, 2*mapScale+(mapScale/10), 5*mapScale+(mapScale/10), mapScale-((mapScale/10)*2), mapScale-((mapScale/10)*2));
+}, false);
 
 
 easystar.setGrid(level);
@@ -1007,7 +982,7 @@ var init = function () {
 	//if 7tile
 
 
-	easystar.findPath(0, 0, 3, 2, function( path ) {
+	easystar.findPath(0, 0, 2, 6, function( path ) {
 
 	    if (path === null) {
 	        console.log("The path to the destination point was not found.");
@@ -1034,15 +1009,14 @@ var init = function () {
 
 	    	}
 
-	    }
-
+	    }    
 
 	});
 
 
-	easystar.calculate()
+	// easystar.calculate()
 
-	
+
 	// add eventListener for tizenhwkey
 	// document.addEventListener('tizenhwkey', function(e) {
 	// 	if(e.keyName == "back") {
@@ -1055,6 +1029,9 @@ var init = function () {
 	// });
 };
 
+var calculatePathNow = function() {
+	easystar.calculate();
+};
 
 //refactor so can't draw path without loading page over and over again
 //
@@ -1063,7 +1040,7 @@ var init = function () {
 //,1,2 === 110, 210
 function clearImage() {
 	if (coordinatesToDraw1.length !== 1) {
-			context.clearRect(coordinatesToDraw1[0]*100+10, coordinatesToDraw2[0]*100+10, 80, 80);
+		context.clearRect(coordinatesToDraw1[0]*mapScale+(mapScale/10), coordinatesToDraw2[0]*mapScale+(mapScale/10), mapScale-((mapScale/10)*2), mapScale-((mapScale/10)*2));
 
 		coordinatesToDraw1.splice(0, 1);
 		coordinatesToDraw2.splice(0, 1);
@@ -1074,10 +1051,17 @@ function clearImage() {
 	// setTimeout(drawPathNow, 500)
 }
 
-function drawPathNow() {
-	context.drawImage(jyn, coordinatesToDraw1[0]*100+10, coordinatesToDraw2[0]*100+10, 80, 80);
+var drawPathNow = function drawPathNow() {
+
+	context.drawImage(jyn, coordinatesToDraw1[0]*mapScale+(mapScale/10), coordinatesToDraw2[0]*mapScale+(mapScale/10), mapScale-((mapScale/10)*2), mapScale-((mapScale/10)*2));
+	context.drawImage(stormTrooper, 2*mapScale+(mapScale/10), 5*mapScale+(mapScale/10), mapScale-((mapScale/10)*2), mapScale-((mapScale/10)*2));
 	setTimeout(clearImage, 500);
 }	
 // window.onload can work without <body onload="">
+
+//expose to window to use;
 window.onload = init;
+window.calculatePathNow = calculatePathNow;
+window.drawPathNow = drawPathNow;
+}())
 
